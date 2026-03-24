@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Feedora Advance{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <div class="lg:col-span-3">
+            <div class="bg-[#1e293b] border border-[#334155] rounded-3xl p-6 sticky top-24 shadow-lg">
+                
+                <div class="flex items-center gap-4 mb-8 pb-8 border-b border-[#334155]">
+                    <img src="https://i.pravatar.cc/150?u={{ user.username }}" class="w-12 h-12 rounded-full border-2 border-indigo-500" alt="Profile">
+                    <div>
+                        <h3 class="text-white font-bold text-sm">{{ user.username }}</h3>
+                        <p class="text-slate-400 text-xs">Content Creator</p>
+                    </div>
+                </div>
+
+                <nav class="space-y-2">
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 bg-indigo-600/10 text-indigo-400 rounded-xl font-medium transition-all border border-indigo-500/20">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                        Overview
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-[#334155]/50 rounded-xl font-medium transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14"></path></svg>
+                        My Posts
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-[#334155]/50 rounded-xl font-medium transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        Analytics
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-[#334155]/50 rounded-xl font-medium transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                        Settings
+                    </a>
+                </nav>
+
+                <div class="mt-8">
+                    <a href="{% url 'addPost' %}" class="flex items-center justify-center w-full gap-2 px-4 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-bold shadow-lg shadow-indigo-500/20 transition-all transform hover:scale-[1.02]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Write New Post
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-9 space-y-8">
+            
+            <div class="flex items-end justify-between">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-white">Dashboard</h1>
+                    <p class="text-slate-400 mt-1">Welcome back, here's what's happening today.</p>
+                </div>
+                <span class="text-xs font-medium px-3 py-1 bg-[#1e293b] text-slate-300 rounded-full border border-[#334155]">
+                    Last updated: Just now
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-[#1e293b] border border-[#334155] p-6 rounded-3xl">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-blue-500/10 rounded-xl text-blue-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Views</p>
+                            <h3 class="text-2xl font-extrabold text-white">24.5k</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1e293b] border border-[#334155] p-6 rounded-3xl">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-purple-500/10 rounded-xl text-purple-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Posts</p>
+                            <h3 class="text-2xl font-extrabold text-white">42</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1e293b] border border-[#334155] p-6 rounded-3xl">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-emerald-500/10 rounded-xl text-emerald-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Likes</p>
+                            <h3 class="text-2xl font-extrabold text-white">1.2k</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+          <div class="bg-[#1e293b] border border-[#334155] rounded-3xl overflow-hidden">
+    <div class="px-6 py-5 border-b border-[#334155] flex justify-between items-center">
+        <h3 class="font-bold text-white text-lg">Recent Posts</h3>
+        <a href="#" class="text-sm text-indigo-400 hover:text-indigo-300 font-medium">View All</a>
+    </div>
+    
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-slate-400">
+            <thead class="bg-[#0f172a] text-slate-200 uppercase font-bold text-xs tracking-wider">
+                <tr>
+                    <th class="px-6 py-4">Title</th>
+                    <th class="px-6 py-4">Status</th>
+                    <th class="px-6 py-4">Date</th>
+                    <th class="px-6 py-4">Views</th>
+                    <th class="px-6 py-4 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-[#334155]">
+                {% for post in posts %}
+                <tr class="hover:bg-[#334155]/30 transition-colors">
+                    <td class="px-6 py-4 font-medium text-white">{{ post.title }}</td>
+                    <td class="px-6 py-4">
+                        {% if post.status == 'published' %}
+                            <span class="px-2 py-1 bg-emerald-500/10 text-emerald-400 rounded text-xs font-bold border border-emerald-500/20">Published</span>
+                        {% else %}
+                            <span class="px-2 py-1 bg-yellow-500/10 text-yellow-400 rounded text-xs font-bold border border-yellow-500/20">Draft</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">{{ post.created_at|date:"M d, Y" }}</td>
+                    <td class="px-6 py-4">{% if post.view_count %}{{ post.view_count }}{% else %}-{% endif %}</td>
+                    <td class="px-6 py-4 text-right flex justify-end gap-3">
+                        <a href="{% url 'EditPost' post.slug %}" class="text-slate-400 hover:text-indigo-400 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></a>
+                        <a href="{% url 'DeletePost' post.slug %}" class="text-slate-400 hover:text-red-400 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-6 py-4 text-center text-slate-400">No posts found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

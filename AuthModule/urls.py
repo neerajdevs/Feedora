@@ -1,0 +1,9 @@
+from django.urls import path
+from . import views 
+
+urlpatterns = [
+    path("verify-otp/", views.verify_otp_view, name="verify-otp"),
+    path("register/", views.register_view, name="register"),
+    path("login/", views.login_view, name="login"),
+    path("test-email/", views.send_test_email),
+]

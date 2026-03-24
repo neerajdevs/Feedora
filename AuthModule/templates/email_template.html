@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Email clients ke liye inline styles best hoti hain, par yaha basic reset hai */
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #0f172a; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #1e293b; border-radius: 16px; overflow: hidden; margin-top: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid #334155; }
+        .header { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); padding: 30px; text-align: center; }
+        .content { padding: 40px; text-align: center; color: #e2e8f0; }
+        .otp-box { font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #ffffff; background-color: #0f172a; padding: 20px; border-radius: 12px; border: 2px dashed #6366f1; display: inline-block; margin: 20px 0; }
+        .footer { padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #334155; }
+        .warning { color: #94a3b8; font-size: 14px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="color: white; margin: 0; font-size: 28px; letter-spacing: 1px;">Feedora</h1>
+        </div>
+
+        <div class="content">
+            <h2 style="color: #ffffff; margin-top: 0;">Verification Code</h2>
+            <p style="font-size: 16px; line-height: 1.5;">Hello,</p>
+            <p style="font-size: 16px; line-height: 1.5;">Thank you for joining Feedora. Use the code below to verify your email address.</p>
+            
+            <div class="otp-box">
+                {{ otp }}
+            </div>
+
+            <p class="warning">
+                This code is valid for <strong>5 minutes</strong>.<br>
+                Please do not share this code with anyone.
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2026 Feedora Advance. All rights reserved.</p>
+            <p>If you didn't request this code, you can safely ignore this email.</p>
+        </div>
+    </div>
+</body>
+</html>
