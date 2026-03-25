@@ -57,32 +57,37 @@ class Post(models.Model):
         return self.title
     
 
+
 class Like(models.Model):
+    LIKE = 'like'
+    DISLIKE = 'dislike'
+    REACTION_CHOICES = [(LIKE, 'Like'), (DISLIKE, 'Dislike')]
+
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='reactions')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
+    reaction_type = models.CharField(max_length=10, choices=REACTION_CHOICES, null=True, blank=True, )
+ 
     class Meta:
-        unique_together = ("user", "post")
+        unique_together = ('post', 'user')  # ek user ek hi reaction de sakta hai
+
+    def __str__(self):
+        return f"{self.user} - {self.reaction_type} on {self.post}"
 
 
 class Comment(models.Model):
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-
-    content = models.TextField()
-
-    parent = models.ForeignKey(
-        "self",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-        related_name="replies"
-    )
-
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', null=True, blank=True, 
+                                on_delete=models.CASCADE, related_name='replies')
+    body = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['created_at']
 
     def __str__(self):
-        return self.content[:30]
+        return f"Comment by {self.author} on {self.post}"
+
+    def is_reply(self):
+        return self.parent is not None

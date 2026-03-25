@@ -1,7 +1,13 @@
 from django.shortcuts import render , redirect , get_object_or_404
 from .models import Category , Post 
 from django.contrib.auth.decorators import login_required
-from .form import PostForm
+from .form import PostForm ,  CommentForm
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .models import Comment, Like
+
 
 def category_list(request):
     categories = Category.objects.all().order_by("-created_at")
@@ -45,9 +51,6 @@ def add_post(request):
         "form": form
     })
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from .models import Post, Category
 
 @login_required
 def edit_post(request, slug):
@@ -107,5 +110,68 @@ def view_post(request, slug):
         "category_name": category_name
     })
 
-    
 
+
+@login_required
+@require_POST
+def add_comment(request, id):
+    post = get_object_or_404(Post, id=id)
+    form = CommentForm(request.POST)
+    
+    parent_id = request.POST.get('parent_id')  # reply ke liye
+    parent = None
+    if parent_id:
+        parent = get_object_or_404(Comment, id=parent_id)
+
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.post = post
+        comment.author = request.user
+        comment.parent = parent
+        comment.save()
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
+@require_POST
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id, author=request.user)
+    comment.delete()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
+@require_POST
+def toggle_reaction(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    reaction_type = request.POST.get('reaction_type')  # 'like' ya 'dislike'
+
+    if reaction_type not in ['like', 'dislike']:
+        return JsonResponse({'error': 'Invalid reaction'}, status=400)
+
+    reaction, created = Like.objects.get_or_create(
+        post=post, user=request.user,
+        defaults={'reaction_type': reaction_type}
+    )
+
+    if not created:
+        if reaction.reaction_type == reaction_type:
+            reaction.delete()  # same reaction dobara click = undo
+        else:
+            reaction.reaction_type = reaction_type  # like → dislike switch
+            reaction.save()
+
+    likes = post.reactions.filter(reaction_type='like').count()
+    dislikes = post.reactions.filter(reaction_type='dislike').count()
+    user_reaction = None
+    try:
+        user_reaction = post.reactions.get(user=request.user).reaction_type
+    except Like.DoesNotExist:
+        pass
+
+    return JsonResponse({
+        'likes': likes,
+        'dislikes': dislikes,
+        'user_reaction': user_reaction
+    })
