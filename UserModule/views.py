@@ -1,18 +1,23 @@
-from django.shortcuts import render
 from AuthModule.models import User
 from . models import UserProfile
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-# Create your views here.
-
+from django.shortcuts import render, get_object_or_404
+from ContentModule.models import Post 
 
 def view_profile(request, username):
-
     user = get_object_or_404(User, username=username)
     profile = get_object_or_404(UserProfile, user=user)
 
+    user_posts = Post.objects.using('mongo').filter(
+        author_username=username, 
+        status='published' 
+    ).order_by('-created_at')
+
     return render(request, "view_profile.html", {
-        "profile": profile
+        "profile": profile,
+        "user_posts": user_posts, 
+        "user_posts_count": user_posts.count() 
     })
 
 @login_required

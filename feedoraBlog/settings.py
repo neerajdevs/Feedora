@@ -12,9 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +27,20 @@ SECRET_KEY = 'django-insecure-p*lhhqnyd^4insd-vc3drnw1ziole-a^vqj5aofz8o^j-h*o(8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
+from dotenv import load_dotenv
+
+# .env file ko load karo
+load_dotenv()
+
+# Hardcoded key ki jagah .env se lo
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+# Jab hum isko live karenge toh DEBUG ko False karna zaroori hai (Abhi testing ke liye True rakh sakte ho)
+DEBUG = os.environ.get('DEBUG') == 'True'
+
+# Kaunsi domains is website ko host kar sakti hain ('*' matlab sabhi)
+ALLOWED_HOSTS = ['*']
 
 
 AUTH_USER_MODEL = 'AuthModule.User'
@@ -63,6 +74,7 @@ CKEDITOR_CONFIGS = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

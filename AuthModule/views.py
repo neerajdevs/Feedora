@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import get_user_model ,login , authenticate , logout 
+from django.shortcuts import render, redirect, HttpResponse
+from django.contrib.auth import get_user_model, login, authenticate, logout
 from django.core.mail import send_mail
-from django.http import HttpResponse
 from django.conf import settings
+from django.utils import timezone
+
 from AuthModule.utils.otp_service import create_and_store_otp
 from AuthModule.utils.email_service import send_otp_email
-from django.utils import timezone
 from AuthModule.models import EmailOTP
 from AuthModule.utils.otp import hash_otp
 from UserModule.models import UserProfile
@@ -92,15 +92,11 @@ def send_test_email(request):
 
 User = get_user_model()
 
+from django.shortcuts import render, redirect, HttpResponse
 
 def verify_otp_view(request):
-
-    # SESSION SE EMAIL LO
     email = request.session.get("email")
 
-    print("SESSION EMAIL:", email)  # debug
-
-    # session missing
     if not email:
         return HttpResponse("Session expired. Please register again.")
 
@@ -108,16 +104,12 @@ def verify_otp_view(request):
         otp_input = request.POST.get("otp")
 
         if not otp_input:
-            return render(request, "otp_verfiy.html", {
-                "error": "Enter OTP"
-            })
+            return render(request, "otp_verfiy.html", {"error": "Enter OTP"})
 
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            return render(request, "otp_verfiy.html", {
-                "error": "User not found"
-            })
+            return render(request, "otp_verfiy.html", {"error": "User not found"})
 
         try:
             otp_record = EmailOTP.objects.filter(
@@ -125,19 +117,11 @@ def verify_otp_view(request):
                 purpose="register",
                 is_used=False
             ).latest("created_at")
-
         except EmailOTP.DoesNotExist:
-            return render(request, "otp_verfiy.html", {
-                "error": "OTP not found"
-            })
+            return render(request, "otp_verfiy.html", {"error": "OTP not found"})
 
-        # expiry check
         if otp_record.expires_at < timezone.now():
-            return render(request, "otp_verfiy.html", {
-                "error": "OTP expired"
-            })
-
-       
+            return render(request, "otp_verfiy.html", {"error": "OTP expired"})
 
         # success
         otp_record.is_used = True
@@ -146,14 +130,12 @@ def verify_otp_view(request):
         user.is_active = True
         user.save()
         
-        # ⭐ CREATE PROFILE AFTER VERIFY
         UserProfile.objects.get_or_create(user=user)
         login(request, user)
 
-        # session cleanup (good practice)
         del request.session["email"]
 
-        
+        # Redirect added here
+        return redirect('IndexPage')
 
     return render(request, "otp_verfiy.html")
-
