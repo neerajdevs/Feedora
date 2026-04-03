@@ -1,232 +1,388 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ post.title }} | Feedora{% endblock %}
+{% block title %}{{ post.meta_title|default:post.title }} | Feedora{% endblock %}
+
+{% block meta %}
+    <meta name="title" content="{{ post.meta_title|default:post.title }}">
+    <meta name="description" content="{{ post.meta_description|default:post.excerpt }}">
+    <meta name="keywords" content="{{ post.keywords }}">
+{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-[#0f172a] relative font-sans py-12 px-4 sm:px-6 lg:px-8">
+<style>
+    .glass-card {
+        background: rgba(30, 41, 59, 0.4);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
     
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+    .ck-content-area {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        color: #cbd5e1;
+        font-size: 1.125rem;
+        line-height: 1.8;
+    }
+    .ck-content-area * {
+        max-width: 100%;
+    }
+    .ck-content-area h1, .ck-content-area h2, .ck-content-area h3, 
+    .ck-content-area h4, .ck-content-area h5, .ck-content-area h6 {
+        color: #ffffff !important;
+        font-weight: 800 !important;
+        margin-top: 2rem !important;
+        margin-bottom: 1rem !important;
+    }
+    .ck-content-area strong, .ck-content-area b {
+        color: #ffffff !important;
+    }
+    .ck-content-area p {
+        margin-bottom: 1.5rem !important;
+    }
+    .ck-content-area a {
+        color: #22d3ee !important;
+        text-decoration: underline !important;
+        text-underline-offset: 4px;
+    }
+    .ck-content-area a:hover {
+        color: #67e8f9 !important;
+    }
+    .ck-content-area img {
+        border-radius: 1rem;
+        margin: 2rem auto;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: block;
+    }
+    .ck-content-area ul, .ck-content-area ol {
+        padding-left: 1.5rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+    .ck-content-area li {
+        margin-bottom: 0.5rem !important;
+    }
+    .ck-content-area blockquote {
+        border-left: 4px solid #06b6d4;
+        padding-left: 1rem;
+        font-style: italic;
+        color: #94a3b8;
+        background: rgba(15, 23, 42, 0.5);
+        padding: 1rem;
+        border-radius: 0 0.5rem 0.5rem 0;
+    }
+</style>
 
-    <article class="max-w-4xl mx-auto bg-[#1e293b]/80 backdrop-blur-xl border border-[#334155] rounded-3xl shadow-2xl overflow-hidden">
+<div class="min-h-screen bg-[#0f172a] relative font-sans pt-12 pb-24 overflow-hidden">
+    
+    <div class="fixed top-20 left-10 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[150px] pointer-events-none -z-10"></div>
+    <div class="fixed bottom-0 right-10 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[150px] pointer-events-none -z-10"></div>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {% if post.cover_image %}
-        <div class="w-full h-64 sm:h-96 overflow-hidden bg-[#0f172a]">
-            <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" class="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity">
+        <div class="mb-6">
+            <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition-colors font-medium text-sm bg-[#1e293b]/50 backdrop-blur-md px-5 py-2.5 rounded-full border border-[#334155]/50 hover:border-cyan-500/50">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Feed
+            </a>
         </div>
-        {% endif %}
 
-        <div class="p-8 sm:p-12">
+        <article class="glass-card rounded-[2rem] p-6 sm:p-12 shadow-2xl">
             
-            <div class="flex flex-wrap items-center gap-4 mb-6 text-sm text-slate-400 font-medium">
-                <a href="javascript:history.back()" class="flex items-center gap-1 hover:text-white transition-colors mr-4">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    Back
-                </a>
-                
+            <div class="flex flex-wrap items-center gap-3 sm:gap-4 mb-6 text-sm">
                 {% if category_name %}
-                <span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 rounded-full border border-indigo-500/20">{{ category_name }}</span>
+                    <span class="px-3 py-1 bg-cyan-500/10 text-cyan-400 font-bold uppercase tracking-wider text-[10px] rounded-lg border border-cyan-500/20 shadow-[0_0_10px_rgba(6,182,212,0.1)]">
+                        {{ category_name }}
+                    </span>
                 {% endif %}
-                
-                <span class="hidden sm:inline">•</span>
-                <span>{{ post.created_at|date:"F d, Y" }}</span>
-                
-                <span class="hidden sm:inline">•</span>
-                <span class="flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                    {{ post.view_count }}
+                <span class="text-slate-400 font-medium flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    {{ post.published_at|date:"M d, Y"|default:post.created_at|date:"M d, Y" }}
+                </span>
+                <span class="text-slate-600">•</span>
+                <span class="text-slate-400 font-medium flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    {{ post.reading_time|default:"5" }} min read
+                </span>
+                <span class="text-slate-600 hidden sm:inline">•</span>
+                <span class="text-slate-400 font-medium flex items-center gap-1.5 hidden sm:flex">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    {{ post.view_count }} views
                 </span>
             </div>
 
-            <h1 class="text-3xl sm:text-5xl font-extrabold text-white mb-6 leading-tight">{{ post.title }}</h1>
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-[1.2] tracking-tight">
+                {{ post.title }}
+            </h1>
+            
+            {% if post.excerpt %}
+            <p class="text-lg sm:text-xl text-slate-300 font-medium mb-10 leading-relaxed border-l-4 border-cyan-500 pl-5 bg-gradient-to-r from-cyan-500/10 to-transparent py-4 rounded-r-2xl">
+                {{ post.excerpt }}
+            </p>
+            {% endif %}
 
-            <div class="flex items-center justify-between mb-10 pb-10 border-b border-[#334155]">
+            <div class="flex items-center justify-between gap-6 mb-10 pb-8 border-b border-white/5">
                 <div class="flex items-center gap-4">
-                    <img src="https://i.pravatar.cc/150?u={{ post.author_username }}" alt="{{ post.author_username }}" class="w-12 h-12 rounded-full border-2 border-[#334155]">
+                    <div class="relative">
+                        <img src="https://i.pravatar.cc/150?u={{ post.author_username }}" alt="{{ post.author_username }}" class="w-12 h-12 rounded-full border-2 border-slate-700 relative z-10">
+                        <div class="absolute inset-0 bg-cyan-500 rounded-full blur opacity-50"></div>
+                    </div>
                     <div>
-                        <p class="text-white font-bold">{{ post.author_username }}</p>
-                        <p class="text-slate-400 text-sm">Author</p>
+                        <p class="text-white font-bold text-base">{{ post.author_username }}</p>
+                        <p class="text-slate-400 text-xs mt-0.5">Author</p>
                     </div>
                 </div>
                 
                 {% if request.user.id == post.author_id %}
-                <a href="{% url 'EditPost' post.slug %}" class="flex items-center gap-2 px-4 py-2 bg-[#334155] hover:bg-[#475569] text-white rounded-xl text-sm font-bold transition-colors border border-[#475569]">
+                <a href="{% url 'EditPost' post.slug %}" class="flex items-center gap-2 px-5 py-2.5 bg-[#1e293b] hover:bg-slate-700 text-white rounded-xl text-sm font-bold transition-all border border-[#334155] hover:border-cyan-500 shadow-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     Edit Post
                 </a>
                 {% endif %}
             </div>
 
-            <div class="text-slate-200 prose prose-invert prose-lg max-w-none prose-img:rounded-2xl prose-img:border prose-img:border-[#334155] prose-a:text-cyan-400 hover:prose-a:text-cyan-300 prose-headings:text-white prose-p:text-slate-300 prose-strong:text-white prose-pre:bg-[#0f172a] prose-pre:border prose-pre:border-[#334155]">
+            {% if post.cover_image %}
+            <div class="w-full mb-12 rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-[#0f172a]">
+                <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" class="w-full max-h-[500px] object-cover hover:scale-105 transition-transform duration-700">
+            </div>
+            {% endif %}
+
+            <div class="ck-content-area mb-16">
                 {{ post.content|safe }}
             </div>
 
-            <div class="mt-12 pt-8 border-t border-[#334155]">
-                <div class="flex items-center gap-4">
-                    <span class="text-slate-400 text-sm font-medium">Post kaisi lagi?</span>
-
+            <div class="border-t border-white/5 pt-10 flex flex-col items-center">
+                <p class="text-slate-400 font-bold mb-5 uppercase tracking-widest text-xs">Did you find this helpful?</p>
+                
+                <div class="flex items-center gap-2 bg-[#0f172a]/50 p-1.5 rounded-2xl border border-white/5 shadow-inner">
                     <button id="like-btn" onclick="sendReaction('like')"
-                        class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 border
+                        class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300
                         {% if user_reaction == 'like' %}
-                            bg-emerald-500/20 border-emerald-500/50 text-emerald-400
+                            bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]
                         {% else %}
-                            bg-[#1e293b] border-[#334155] text-slate-400 hover:border-emerald-500/40 hover:text-emerald-400
+                            text-slate-400 hover:bg-[#1e293b] hover:text-emerald-400 border border-transparent
                         {% endif %}">
-                        <svg class="w-4 h-4" fill="{% if user_reaction == 'like' %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 {% if user_reaction == 'like' %}animate-bounce{% endif %}" fill="{% if user_reaction == 'like' %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
                         </svg>
-                        <span id="like-count">{{ likes|default:"0" }}</span>
+                        <span id="like-count" class="text-base">{{ likes|default:"0" }}</span>
                     </button>
 
+                    <div class="w-px h-6 bg-slate-700"></div>
+
                     <button id="dislike-btn" onclick="sendReaction('dislike')"
-                        class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 border
+                        class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300
                         {% if user_reaction == 'dislike' %}
-                            bg-rose-500/20 border-rose-500/50 text-rose-400
+                            bg-rose-500/20 border border-rose-500/50 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)]
                         {% else %}
-                            bg-[#1e293b] border-[#334155] text-slate-400 hover:border-rose-500/40 hover:text-rose-400
+                            text-slate-400 hover:bg-[#1e293b] hover:text-rose-400 border border-transparent
                         {% endif %}">
-                        <svg class="w-4 h-4" fill="{% if user_reaction == 'dislike' %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5" fill="{% if user_reaction == 'dislike' %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"></path>
                         </svg>
-                        <span id="dislike-count">{{ dislikes|default:"0" }}</span>
+                        <span id="dislike-count" class="text-base">{{ dislikes|default:"0" }}</span>
                     </button>
                 </div>
             </div>
 
-            <div class="mt-10">
-                <h3 class="text-white text-xl font-bold mb-6 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                    </svg>
-                    Comments
-                    <span class="text-slate-500 text-base font-normal">({{ post.comments.count|default:"0" }})</span>
+            <div class="mt-16">
+                <h3 class="text-white text-xl font-extrabold mb-8 flex items-center gap-3">
+                    <span class="bg-cyan-500/20 text-cyan-400 p-2.5 rounded-xl border border-cyan-500/30">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                    </span>
+                    Discussion ({{ post.comments.count|default:"0" }})
                 </h3>
 
-                <div class="space-y-4 mb-8" id="comments-list">
+                <div id="add-comment-container" class="mb-10"></div>
+
+                <div class="space-y-6" id="comments-list">
                     {% for comment in comments %}
                         {% if not comment.is_reply %}
-                        <div class="bg-[#0f172a]/60 border border-[#334155] rounded-2xl p-5 transition-all duration-200 hover:border-[#475569]">
-                            
-                            <div class="flex items-center justify-between mb-3">
+                        <div class="glass-card rounded-2xl p-6 transition-all duration-300 hover:bg-[#1e293b]/60">
+                            <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center gap-3">
-                                    <img src="https://i.pravatar.cc/150?u={{ comment.author.username }}" 
-                                         class="w-8 h-8 rounded-full border border-[#334155]" alt="">
-                                    <span class="text-white font-semibold text-sm">{{ comment.author.username }}</span>
-                                    <span class="text-slate-500 text-xs">{{ comment.created_at|timesince }} ago</span>
+                                    <img src="https://i.pravatar.cc/150?u={{ comment.author_username }}" class="w-10 h-10 rounded-full border border-slate-600" alt="">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-white font-bold block text-sm">{{ comment.author_username }}</span>
+                                            {% if comment.author_id == post.author_id %}
+                                                <span class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded backdrop-blur-md">Author</span>
+                                            {% endif %}
+                                        </div>
+                                        <span class="text-slate-500 text-xs">{{ comment.created_at|timesince }} ago</span>
+                                    </div>
                                 </div>
-                                {% if user == comment.author %}
-                                <form method="post" action="{% url 'comments:delete_comment' comment.id %}">
+                                {% if request.user.id == comment.author_id %}
+                                <form method="post" action="{% url 'delete_comment' comment.id %}">
                                     {% csrf_token %}
-                                    <button type="submit" class="text-slate-600 hover:text-rose-400 transition-colors">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
+                                    <button type="submit" class="p-2 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all" title="Delete Comment">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     </button>
                                 </form>
                                 {% endif %}
                             </div>
 
-                            <p class="text-slate-300 text-sm leading-relaxed mb-3">{{ comment.body }}</p>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4 pl-[3.25rem]">{{ comment.body }}</p>
 
-                            {% if user.is_authenticated %}
-                            <button onclick="toggleReplyForm('{{ comment.id }}')"
-                                class="flex items-center gap-1.5 text-xs text-slate-500 hover:text-indigo-400 transition-colors font-medium">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
-                                </svg>
-                                Reply
-                            </button>
-                            {% endif %}
-
-                            <div id="reply-form-{{ comment.id }}" class="hidden mt-4">
-                                <form method="post" action="{% url 'comments:add_comment' post.id %}" class="flex gap-3">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
-                                    <input type="text" name="body" required placeholder="Reply likho..."
-                                        class="flex-1 bg-[#1e293b] border border-[#334155] focus:border-indigo-500/50 focus:outline-none rounded-xl px-4 py-2.5 text-sm text-slate-200 placeholder-slate-600 transition-colors">
-                                    <button type="submit"
-                                        class="px-4 py-2.5 bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-400 rounded-xl text-sm font-bold transition-all">
-                                        Post
-                                    </button>
-                                </form>
-                            </div>
-
-                            {% if comment.replies.all %}
-                            <div class="mt-4 space-y-3 pl-4 border-l-2 border-[#334155]">
-                                {% for reply in comment.replies.all %}
-                                <div class="flex items-start gap-3">
-                                    <img src="https://i.pravatar.cc/150?u={{ reply.author.username }}" 
-                                         class="w-7 h-7 rounded-full border border-[#334155] mt-0.5 flex-shrink-0" alt="">
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex items-center justify-between gap-2">
-                                            <div class="flex items-center gap-2">
-                                                <span class="text-white font-semibold text-xs">{{ reply.author.username }}</span>
-                                                <span class="text-slate-600 text-xs">{{ reply.created_at|timesince }} ago</span>
-                                            </div>
-                                            {% if user == reply.author %}
-                                            <form method="post" action="{% url 'comments:delete_comment' reply.id %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="text-slate-600 hover:text-rose-400 transition-colors">
-                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                    </svg>
-                                                </button>
-                                            </form>
-                                            {% endif %}
+                            <div class="pl-[3.25rem]">
+                                <div id="reply-container-{{ comment.id }}"></div>
+                                <div id="reply-form-{{ comment.id }}" class="hidden mt-4">
+                                    <form method="post" action="{% url 'add_comment' post.id %}" class="flex gap-3">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                        <div class="flex-1 relative">
+                                            <input type="text" name="body" required placeholder="Write a reply..."
+                                                class="w-full bg-[#0f172a] border border-[#334155] focus:border-cyan-500 outline-none rounded-xl pl-4 pr-20 py-2.5 text-sm text-slate-200 transition-all focus:ring-1 focus:ring-cyan-500">
+                                            <button type="submit" class="absolute right-1.5 top-1.5 px-3 py-1 bg-cyan-500 hover:bg-cyan-400 text-slate-900 rounded-lg text-xs font-bold transition-all shadow-lg shadow-cyan-500/20">
+                                                Reply
+                                            </button>
                                         </div>
-                                        <p class="text-slate-400 text-xs leading-relaxed mt-1">{{ reply.body }}</p>
-                                    </div>
+                                    </form>
                                 </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
 
+                                {% if comment.replies.all %}
+                                <div class="mt-5 space-y-4 border-l-2 border-[#334155] pl-4">
+                                    {% for reply in comment.replies.all %}
+                                    <div class="flex items-start justify-between gap-3 relative">
+                                        <div class="absolute w-4 h-px bg-[#334155] -left-4 top-4"></div>
+                                        <div class="flex items-start gap-3 w-full">
+                                            <img src="https://i.pravatar.cc/150?u={{ reply.author_username }}" class="w-8 h-8 rounded-full border border-slate-700" alt="">
+                                            <div class="flex-1 overflow-hidden">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <span class="text-white font-bold text-sm">{{ reply.author_username }}</span>
+                                                    {% if reply.author_id == post.author_id %}
+                                                        <span class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-[8px] font-bold uppercase tracking-wider px-1 py-0.5 rounded backdrop-blur-md">Author</span>
+                                                    {% endif %}
+                                                    <span class="text-slate-500 text-xs">{{ reply.created_at|timesince }} ago</span>
+                                                </div>
+                                                <p class="text-slate-300 text-sm break-words">{{ reply.body }}</p>
+                                            </div>
+                                        </div>
+                                        {% if request.user.id == reply.author_id %}
+                                        <form method="post" action="{% url 'delete_comment' reply.id %}" class="shrink-0">
+                                            {% csrf_token %}
+                                            <button type="submit" class="text-slate-500 hover:text-rose-400 p-1 rounded transition-colors" title="Delete Reply">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
                         </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const container = document.getElementById('reply-container-{{ comment.id }}');
+                                if (isAuthenticated) {
+                                    container.innerHTML = `
+                                        <button onclick="toggleReplyForm('{{ comment.id }}')"
+                                            class="text-xs text-cyan-500 hover:text-cyan-400 font-bold uppercase tracking-wider transition-colors flex items-center gap-1">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>
+                                            Reply
+                                        </button>
+                                    `;
+                                }
+                            });
+                        </script>
                         {% endif %}
                     {% empty %}
-                    <div class="text-center py-10 text-slate-500">
-                        <svg class="w-10 h-10 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                        </svg>
-                        <p class="text-sm">Abhi koi comment nahi. Pehle tum karo!</p>
+                    <div class="text-center py-10 border border-[#334155] border-dashed rounded-2xl bg-[#1e293b]/30">
+                        <p class="text-slate-400 text-sm font-medium">No comments yet. Be the first to share your thoughts!</p>
                     </div>
                     {% endfor %}
                 </div>
-
-                {% if user.is_authenticated %}
-                <div class="bg-[#0f172a]/40 border border-[#334155] rounded-2xl p-5">
-                    <p class="text-slate-400 text-sm font-medium mb-3">Comment karo</p>
-                    <form method="post" action="{% url 'add_comment' post.id %}" class="flex flex-col gap-3">
-                        {% csrf_token %}
-                        <textarea name="body" rows="3" required placeholder="Apna comment likho..."
-                            class="w-full bg-[#1e293b] border border-[#334155] focus:border-indigo-500/50 focus:outline-none rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 transition-colors resize-none"></textarea>
-                        <div class="flex justify-end">
-                            <button type="submit"
-                                class="px-6 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-sm font-bold transition-all duration-200 shadow-lg shadow-indigo-500/20">
-                                Post Comment
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                {% else %}
-                <div class="text-center py-6 bg-[#0f172a]/40 border border-[#334155] rounded-2xl">
-                    <p class="text-slate-400 text-sm">
-                        Comment karne ke liye 
-                        <a href="{% url 'login' %}" class="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">login karo</a>
-                    </p>
-                </div>
-                {% endif %}
             </div>
-
-        </div>
-    </article>
+        </article>
+    </main>
 </div>
 
 <script>
     const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
     const loginUrl = "{% url 'login' %}";
-    const reactionUrl = "{% url 'comments:toggle_reaction' post.id %}";
+    const reactionUrl = "{% url 'toggle_reaction' post.id %}";
     const csrfToken = "{{ csrf_token }}";
+
+   document.addEventListener('DOMContentLoaded', function() {
+        const addCommentContainer = document.getElementById('add-comment-container');
+        if (isAuthenticated) {
+            addCommentContainer.innerHTML = `
+                <form method="post" action="{% url 'add_comment' post.id %}" class="bg-gradient-to-br from-[#1e293b]/80 to-[#0f172a]/80 border border-cyan-500/20 rounded-3xl p-6 mb-8 shadow-lg relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-[30px] -z-10"></div>
+                    <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+                    <textarea name="body" rows="3" required placeholder="Share your thoughts..."
+                        class="w-full bg-[#0f172a] border border-[#334155] focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none rounded-2xl px-5 py-4 text-sm text-slate-200 resize-none mb-4 transition-all"></textarea>
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-900 rounded-xl text-sm font-bold transition-all transform active:scale-95 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                            Post Comment
+                        </button>
+                    </div>
+                </form>
+            `;
+        } else {
+            addCommentContainer.innerHTML = `
+                <div class="flex flex-col sm:flex-row items-center justify-between glass-card rounded-2xl p-6 mb-8 gap-4">
+                    <p class="text-slate-300 text-sm font-semibold">Log in to leave a comment and join the discussion.</p>
+                    <a href="${loginUrl}" class="px-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-900 text-sm font-bold rounded-xl transition-colors shadow-lg shadow-cyan-500/20 whitespace-nowrap">Log In</a>
+                </div>
+            `;
+        }
+    });
+
+    document.addEventListener('submit', function(e) {
+        if (e.target && e.target.action && e.target.action.includes('add_comment')) {
+            e.preventDefault(); 
+            
+            const form = e.target;
+            const formData = new FormData(form);
+            const submitButton = form.querySelector('button[type="submit"]');
+            
+            submitButton.disabled = true;
+            submitButton.innerHTML = 'Posting...';
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const commentsList = document.getElementById('comments-list'); 
+                    
+                    const newCommentHTML = `
+                        <div class="glass-card rounded-2xl p-6 mb-4 animate-fade-in">
+                            <div class="flex items-center gap-3 mb-3">
+                                <h4 class="text-cyan-400 font-bold">${data.username}</h4>
+                                <span class="text-xs text-slate-500">Just now</span>
+                            </div>
+                            <p class="text-slate-300 text-sm">${data.body}</p>
+                        </div>
+                    `;
+                    
+                    if (commentsList) {
+                        commentsList.insertAdjacentHTML('afterbegin', newCommentHTML);
+                    }
+                    
+                    form.reset();
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = 'Post Comment';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Post Comment';
+            });
+        }
+    });
+
 
     function toggleReplyForm(commentId) {
         const form = document.getElementById('reply-form-' + commentId);
@@ -258,22 +414,20 @@
             const likeBtn = document.getElementById('like-btn');
             const dislikeBtn = document.getElementById('dislike-btn');
 
-            likeBtn.className = likeBtn.className
-                .replace(/bg-emerald-500\/20 border-emerald-500\/50 text-emerald-400/, '')
-                + ' bg-[#1e293b] border-[#334155] text-slate-400';
-            dislikeBtn.className = dislikeBtn.className
-                .replace(/bg-rose-500\/20 border-rose-500\/50 text-rose-400/, '')
-                + ' bg-[#1e293b] border-[#334155] text-slate-400';
+            likeBtn.className = 'flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 text-slate-400 hover:bg-[#1e293b] hover:text-emerald-400 border border-transparent';
+            likeBtn.querySelector('svg').classList.remove('animate-bounce');
+            likeBtn.querySelector('svg').setAttribute('fill', 'none');
+
+            dislikeBtn.className = 'flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 text-slate-400 hover:bg-[#1e293b] hover:text-rose-400 border border-transparent';
+            dislikeBtn.querySelector('svg').setAttribute('fill', 'none');
 
             if (data.user_reaction === 'like') {
-                likeBtn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 border bg-emerald-500/20 border-emerald-500/50 text-emerald-400';
-                dislikeBtn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 border bg-[#1e293b] border-[#334155] text-slate-400 hover:border-rose-500/40 hover:text-rose-400';
+                likeBtn.className = 'flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]';
+                likeBtn.querySelector('svg').classList.add('animate-bounce');
+                likeBtn.querySelector('svg').setAttribute('fill', 'currentColor');
             } else if (data.user_reaction === 'dislike') {
-                dislikeBtn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 border bg-rose-500/20 border-rose-500/50 text-rose-400';
-                likeBtn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 border bg-[#1e293b] border-[#334155] text-slate-400 hover:border-emerald-500/40 hover:text-emerald-400';
-            } else {
-                likeBtn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 border bg-[#1e293b] border-[#334155] text-slate-400 hover:border-emerald-500/40 hover:text-emerald-400';
-                dislikeBtn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 border bg-[#1e293b] border-[#334155] text-slate-400 hover:border-rose-500/40 hover:text-rose-400';
+                dislikeBtn.className = 'flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 bg-rose-500/20 border border-rose-500/50 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)]';
+                dislikeBtn.querySelector('svg').setAttribute('fill', 'currentColor');
             }
         });
     }

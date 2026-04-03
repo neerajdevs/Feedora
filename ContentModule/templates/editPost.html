@@ -9,19 +9,20 @@
         display: block;
         font-size: 0.875rem;
         font-weight: 700;
-        color: #cbd5e1;
+        color: #cbd5e1; 
         margin-bottom: 0.5rem;
-        margin-top: 1.5rem;
     }
 
     .custom-django-form input[type="text"],
+    .custom-django-form input[type="number"],
+    .custom-django-form input[type="email"],
     .custom-django-form select,
     .custom-django-form textarea {
         width: 100%;
-        background-color: #0f172a;
-        border: 1px solid #334155;
+        background-color: #0f172a; 
+        border: 1px solid #334155; 
         color: white;
-        border-radius: 0.75rem;
+        border-radius: 0.75rem; 
         padding: 0.875rem 1rem;
         font-size: 1rem;
         outline: none;
@@ -32,12 +33,102 @@
     .custom-django-form input:focus,
     .custom-django-form select:focus,
     .custom-django-form textarea:focus {
-        border-color: #06b6d4;
-        box-shadow: 0 0 0 1px #06b6d4;
+        border-color: #06b6d4; 
+        box-shadow: 0 0 0 1px #06b6d4; 
+    }
+
+    .custom-django-form .errorlist {
+        color: #f87171;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+        list-style-type: disc;
+        padding-left: 1.25rem;
+    }
+
+    .django-ckeditor-widget {
+        width: 100% !important;
+        display: block !important;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        border: 1px solid #334155;
+        background-color: white; 
+    }
+    .django-ckeditor-widget iframe {
+        width: 100% !important;
+    }
+
+    /* Fixed Image Upload Widget Styling */
+    .current-image-preview {
+        background-color: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 0.75rem;
+        padding: 1rem;
+        color: #94a3b8;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+    .current-image-preview > label:first-child {
+        margin-top: 0;
+        font-size: 1rem;
+        color: #cbd5e1;
+        border-bottom: 1px solid #334155;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    .current-image-preview a {
+        color: #06b6d4;
+        font-weight: 600;
+        text-decoration: none;
+        word-break: break-all;
+        margin: 0 0.5rem;
+    }
+    .current-image-preview a:hover {
+        text-decoration: underline;
+    }
+    .current-image-preview input[type="checkbox"] {
+        width: 1rem;
+        height: 1rem;
+        accent-color: #ef4444;
+        vertical-align: middle;
+        margin-right: 0.4rem;
+        cursor: pointer;
+    }
+    .current-image-preview label[for$="-clear_id"] {
+        display: inline-block;
+        color: #ef4444;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 0;
+    }
+    .current-image-preview br {
+        display: block;
+        margin: 0.5rem 0;
+        content: "";
+    }
+    .current-image-preview input[type="file"] {
+        display: block;
+        width: 100%;
+        margin-top: 0.5rem;
+        color: #94a3b8;
+        cursor: pointer;
+    }
+    .current-image-preview input[type="file"]::file-selector-button {
+        background-color: #1e293b;
+        color: #38bdf8;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        margin-right: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .current-image-preview input[type="file"]::file-selector-button:hover {
+        background-color: #334155;
     }
 </style>
 
 <div class="min-h-screen bg-[#0f172a] relative overflow-hidden font-sans py-20 px-4">
+
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[150px] pointer-events-none -z-10"></div>
 
     <div class="max-w-4xl mx-auto bg-[#1e293b]/60 backdrop-blur-xl border border-[#334155]/60 rounded-3xl shadow-2xl relative z-10 overflow-hidden">
@@ -52,28 +143,75 @@
             </a>
         </div>
 
-        <form method="POST" class="p-8 custom-django-form">
+        <form method="POST" enctype="multipart/form-data" class="p-8 custom-django-form">
             {% csrf_token %}
+            {{ form.media }}
             
-            <label for="title">Title:</label>
-            <input type="text" name="title" id="title" value="{{ post.title }}" required>
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label>Post Title <span class="text-red-500">*</span></label>
+                        {{ form.title.errors }}
+                        {{ form.title }}
+                    </div>
+                    <div>
+                        <label>Category</label>
+                        {{ form.category_id.errors }}
+                        {{ form.category_id }}
+                    </div>
+                </div>
 
-            <label for="category">Category:</label>
-            <select name="category" id="category">
-                <option value="">---------</option>
-                {% for cat in categories %}
-                    <option value="{{ cat.id }}" {% if post.category_id == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
-                {% endfor %}
-            </select>
+                <div class="current-image-preview">
+                    <label>Cover Image</label>
+                    {{ form.cover_image.errors }}
+                    {{ form.cover_image }}
+                </div>
 
-            <label for="content">Content:</label>
-            <textarea name="content" id="content" rows="10">{{ post.content|safe }}</textarea>
+                <div>
+                    <label>Short Summary (Excerpt)</label>
+                    {{ form.excerpt.errors }}
+                    {{ form.excerpt }}
+                </div>
+
+                <div>
+                    <label>Main Content <span class="text-red-500">*</span></label>
+                    {{ form.content.errors }}
+                    {{ form.content }}
+                </div>
+            </div>
+
+            <div class="mt-10 pt-8 border-t border-[#334155]/50">
+                <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                    SEO & Advanced Settings
+                </h2>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label>Meta Title</label>
+                        {{ form.meta_title.errors }}
+                        {{ form.meta_title }}
+                    </div>
+                    
+                    <div>
+                        <label>Meta Description</label>
+                        {{ form.meta_description.errors }}
+                        {{ form.meta_description }}
+                    </div>
+                    
+                    <div>
+                        <label>Keywords</label>
+                        {{ form.keywords.errors }}
+                        {{ form.keywords }}
+                    </div>
+                </div>
+            </div>
 
             <div class="flex flex-col sm:flex-row items-center justify-end gap-4 border-t border-[#334155]/50 pt-6 mt-8">
                 <a href="javascript:history.back()" class="w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-slate-300 hover:text-white text-center bg-transparent hover:bg-slate-800 transition-colors">
                     Cancel
                 </a>
-
+                
                 <button type="submit" name="save_draft" class="w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-slate-200 bg-[#334155] hover:bg-[#475569] border border-[#475569] shadow-lg transition-all flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                     Save as Draft
@@ -84,16 +222,8 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 </button>
             </div>
+
         </form>
     </div>
 </div>
-
-<script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
-<script>
-    CKEDITOR.replace('content', {
-        width: '100%',
-        height: 300,
-        uiColor: '#1e293b'
-    });
-</script>
 {% endblock %}

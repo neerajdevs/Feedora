@@ -5,10 +5,6 @@
 
 {% block content %}
 <style>
-    .custom-django-form p {
-        margin-bottom: 1.75rem;
-    }
-    
     .custom-django-form label {
         display: block;
         font-size: 0.875rem;
@@ -63,21 +59,6 @@
         box-shadow: 0 0 0 1px #06b6d4; 
     }
 
-    .custom-django-form input[type="checkbox"] {
-        width: 1.25rem;
-        height: 1.25rem;
-        accent-color: #06b6d4;
-        margin-right: 0.5rem;
-        cursor: pointer;
-    }
-
-    .custom-django-form .helptext {
-        font-size: 0.75rem;
-        color: #64748b;
-        margin-top: 0.375rem;
-        display: block;
-    }
-
     .custom-django-form .errorlist {
         color: #f87171;
         font-size: 0.875rem;
@@ -117,9 +98,67 @@
 
         <form method="POST" enctype="multipart/form-data" class="p-8 custom-django-form">
             {% csrf_token %}
-            
             {{ form.media }}
-            {{ form.as_p }}
+            
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label>Post Title <span class="text-red-500">*</span></label>
+                        {{ form.title.errors }}
+                        {{ form.title }}
+                    </div>
+                    <div>
+                        <label>Category</label>
+                        {{ form.category_id.errors }}
+                        {{ form.category_id }}
+                    </div>
+                </div>
+
+                <div>
+                    <label>Cover Image</label>
+                    {{ form.cover_image.errors }}
+                    {{ form.cover_image }}
+                </div>
+
+                <div>
+                    <label>Short Summary (Excerpt)</label>
+                    {{ form.excerpt.errors }}
+                    {{ form.excerpt }}
+                </div>
+
+                <div>
+                    <label>Main Content <span class="text-red-500">*</span></label>
+                    {{ form.content.errors }}
+                    {{ form.content }}
+                </div>
+            </div>
+
+            <div class="mt-10 pt-8 border-t border-[#334155]/50">
+                <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                    SEO & Advanced Settings
+                </h2>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label>Meta Title</label>
+                        {{ form.meta_title.errors }}
+                        {{ form.meta_title }}
+                    </div>
+                    
+                    <div>
+                        <label>Meta Description</label>
+                        {{ form.meta_description.errors }}
+                        {{ form.meta_description }}
+                    </div>
+                    
+                    <div>
+                        <label>Keywords</label>
+                        {{ form.keywords.errors }}
+                        {{ form.keywords }}
+                    </div>
+                </div>
+            </div>
 
             <div class="flex flex-col sm:flex-row items-center justify-end gap-4 border-t border-[#334155]/50 pt-6 mt-8">
                 <a href="javascript:history.back()" class="w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-slate-300 hover:text-white text-center bg-transparent hover:bg-slate-800 transition-colors">

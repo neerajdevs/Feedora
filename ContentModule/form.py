@@ -1,19 +1,23 @@
 from django import forms
 from .models import Post, Category , Comment
 
+
 class PostForm(forms.ModelForm):
-    category = forms.ChoiceField(choices=[])
+    category_id = forms.ModelChoiceField(
+        queryset=Category.objects.using('mongo').all(),
+        empty_label="Select a Category",
+        required=False
+    )
 
     class Meta:
         model = Post
-        fields = ["title", "content", "category" ,"status"]
+        fields = ['title', 'category_id', 'excerpt', 'cover_image', 'content', 'meta_title', 'meta_description', 'keywords']
+        widgets = {
+            'excerpt': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Write a short summary...'}),
+            'meta_description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Search engine description...'}),
+            'keywords': forms.TextInput(attrs={'placeholder': 'django, python, web development'}),
+        }
         
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        categories = Category.objects.using('mongo').all()
-        self.fields['category'].choices = [('', '---------')] + [(str(cat.id), cat.name) for cat in categories]
-
-
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment

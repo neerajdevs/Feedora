@@ -128,6 +128,21 @@ DATABASES = {
 # settings.py
 DATABASE_ROUTERS = ["db_router.DatabaseRouter"]
 
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1", # Default Redis server address
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# Session engine ko bhi Redis par shift kar sakte hain (Optional but recommended)
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
 # Email Verification
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

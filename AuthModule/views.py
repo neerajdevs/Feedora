@@ -75,8 +75,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request )
-    return render(request , "index")
-
+    return redirect("login")
 
 def send_test_email(request):
     send_mail(

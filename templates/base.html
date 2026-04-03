@@ -7,59 +7,162 @@
     <title>{% block title %}Feedora{% endblock %}</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #F9FAFB; color: #111827; }
-        .content-text { font-family: 'Merriweather', serif; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0f172a; /* Main Dark Slate */
+            color: #f8fafc; 
+        }
+        .content-serif { 
+            font-family: 'Merriweather', serif; 
+        }
+        ::selection {
+            background-color: rgba(6, 182, 212, 0.3); /* Cyan selection */
+            color: white;
+        }
     </style>
     
     {% block extra_head %}{% endblock %}
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col min-h-screen overflow-x-hidden">
 
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
+    <nav class="sticky top-0 z-50 bg-[#0f172a]/80 backdrop-blur-xl border-b border-white/5 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
+            <div class="flex justify-between h-20 items-center">
+                
                 <div class="flex-shrink-0 flex items-center">
-                    <a href="{% url 'IndexPage' %}" class="text-2xl font-bold text-[#4F46E5] tracking-tight">Feedora</a>
+                    <a href="{% url 'IndexPage' %}" class="text-3xl font-black bg-gradient-to-r from-cyan-400 to-indigo-500 bg-clip-text text-transparent tracking-tight hover:opacity-80 transition-opacity">
+                        Feedora
+                    </a>
                 </div>
                 
-                <div class="hidden md:flex flex-1 justify-center px-8">
-                    <div class="w-full max-w-lg">
-                        <input type="text" class="w-full bg-gray-100 border-transparent focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5] rounded-full py-2 px-4 text-sm transition-colors" placeholder="Search Feedora...">
-                    </div>
+        <div class="hidden md:flex flex-1 justify-center px-12">
+    <form action="{% url 'search' %}" method="GET" class="w-full max-w-xl relative group">
+        
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg class="w-5 h-5 text-slate-500 group-focus-within:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </div>
+        
+        <input type="text" id="live-search-input" name="q" value="{{ query|default:'' }}" required autocomplete="off" 
+            class="w-full bg-[#1e293b] border border-slate-700/50 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 rounded-full py-2.5 pl-12 pr-4 text-sm text-slate-200 placeholder-slate-500 transition-all outline-none shadow-inner" 
+            placeholder="Search Feedora...">
+
+        <div id="search-dropdown" class="absolute top-full left-0 w-full mt-2 bg-[#1e293b] border border-cyan-500/30 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] hidden z-50 overflow-hidden backdrop-blur-md">
+            <ul id="search-results-list" class="max-h-72 overflow-y-auto custom-scrollbar">
+                </ul>
+        </div>
+
+    </form>
+</div>
+
+                <div class="hidden md:flex items-center space-x-6">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'addPost' %}" class="text-slate-400 hover:text-cyan-400 text-sm font-bold flex items-center gap-2 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            Write
+                        </a>
+                        <a href="{% url 'Profile' user.username %}" class="text-slate-400 hover:text-white text-sm font-bold transition-colors">Profile</a>
+                        <a href="{% url 'logout' %}" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-slate-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm">
+                            Logout
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="text-slate-400 hover:text-white text-sm font-bold transition-colors">Sign In</a>
+                        <a href="{% url 'register' %}" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all transform active:scale-95 shadow-lg shadow-cyan-500/20">
+                            Get Started
+                        </a>
+                    {% endif %}
                 </div>
 
-                <div class="hidden md:flex items-center space-x-4">
-                    {% if user.is_authenticated %}
-                        <a href="#" class="text-gray-600 hover:text-[#4F46E5] text-sm font-medium">Write</a>
-                        <a href="{% url 'Profile' user.username %}" class="text-gray-600 hover:text-[#4F46E5] text-sm font-medium">Profile</a>
-                        <a href="{% url 'IndexPage' %}" class="bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-full text-sm font-medium transition">Logout</a>
-                    {% else %}
-                        <a href="{% url 'IndexPage' %}" class="text-gray-600 hover:text-[#4F46E5] text-sm font-medium">Sign In</a>
-                        <a href="{% url 'IndexPage' %}" class="bg-[#4F46E5] text-white hover:bg-[#4338CA] px-5 py-2 rounded-full text-sm font-medium transition shadow-sm">Get Started</a>
-                    {% endif %}
+                <div class="md:hidden flex items-center">
+                    <button class="text-slate-400 hover:text-white focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-grow w-full flex flex-col relative">
         {% block content %}
         {% endblock %}
     </main>
 
-    <footer class="bg-white border-t border-gray-200 mt-auto">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <p class="text-gray-500 text-sm">© 2026 Feedora. All rights reserved.</p>
+    <footer class="bg-[#0f172a] border-t border-white/5 mt-auto relative z-20">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p class="text-slate-500 text-sm font-medium">© 2026 Feedora. Crafted for developers.</p>
             <div class="flex space-x-6">
-                <a href="#" class="text-gray-400 hover:text-[#4F46E5] text-sm transition-colors">Privacy</a>
-                <a href="#" class="text-gray-400 hover:text-[#4F46E5] text-sm transition-colors">Terms</a>
+                <a href="#" class="text-slate-500 hover:text-cyan-400 text-sm font-medium transition-colors">Privacy</a>
+                <a href="#" class="text-slate-500 hover:text-cyan-400 text-sm font-medium transition-colors">Terms</a>
+                <a href="#" class="text-slate-500 hover:text-cyan-400 text-sm font-medium transition-colors">Contact</a>
             </div>
         </div>
     </footer>
 
     {% block extra_scripts %}{% endblock %}
 </body>
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('live-search-input');
+    const searchDropdown = document.getElementById('search-dropdown');
+    const resultsList = document.getElementById('search-results-list');
+    
+    let debounceTimer;
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
+
+            if (query.length === 0) {
+                searchDropdown.classList.add('hidden');
+                return;
+            }
+
+            // 300ms Debouncing
+            debounceTimer = setTimeout(() => {
+                fetch(`/search/?q=${query}`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resultsList.innerHTML = ''; 
+                    
+                    if (data.results.length > 0) {
+                        data.results.forEach(post => {
+                            const li = document.createElement('li');
+                            // UI matching your theme
+                            li.innerHTML = `
+                                <a href="/post/${post.slug}" class="block px-5 py-3 hover:bg-[#0f172a] transition-colors border-b border-slate-700/50 last:border-0 group">
+                                    <h4 class="text-slate-200 font-semibold text-sm group-hover:text-cyan-400 transition-colors">${post.title}</h4>
+                                    <p class="text-xs text-slate-500 mt-1">By @${post.author}</p>
+                                </a>
+                            `;
+                            resultsList.appendChild(li);
+                        });
+                    } else {
+                        resultsList.innerHTML = `<li class="px-5 py-4 text-sm text-slate-400 text-center">No posts found for "${query}"</li>`;
+                    }
+                    
+                    searchDropdown.classList.remove('hidden');
+                })
+                .catch(error => console.error('Error fetching search results:', error));
+                
+            }, 300);
+        });
+    }
+
+    // Dropdown ke bahar click karne par usko chhupa do
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+            searchDropdown.classList.add('hidden');
+        }
+    });
+});
+
+</script>
 </html>
