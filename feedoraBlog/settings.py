@@ -208,14 +208,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# STATIC FILES
-STATIC_URL = "/static/"
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static",   # project level static folder
-]
-
-STATIC_ROOT = BASE_DIR / "staticfiles"  # production use
 
 # MEDIA FILES
 MEDIA_URL = "/media/"
