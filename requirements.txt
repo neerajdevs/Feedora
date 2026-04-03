@@ -2,6 +2,7 @@ asgiref
 certifi
 charset-normalizer
 Django
+pymysql
 django-ckeditor
 django-cors-headers
 django-jazzmin
